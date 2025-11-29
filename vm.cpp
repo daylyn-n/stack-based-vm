@@ -62,7 +62,8 @@ void VM::doPrimitive()
 		case 1: // ADD
 			cout << "add " << memory[SP - 1] << " " << memory[SP] << endl;
 		       memory[SP - 1] = memory[SP-1] + memory[SP]; // our stack grows upwards
-			break;
+			SP-=1;	
+	       	       break;
 		case 2: // SUB
 			cout << "sub" << memory[SP -1] << " " << memory[SP] << endl;
 			memory[SP-1] =  memory[SP-1] - memory[SP];
