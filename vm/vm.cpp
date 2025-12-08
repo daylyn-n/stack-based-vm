@@ -22,7 +22,7 @@ VM::VM()
 i_32 VM::getTyp(i_32 instruction)
 {
 	// returns the top two bits
-	i_32 type = 0xc0000000;
+	i_32 type =  0xc0000000;
 	type = (type & instruction) >> 30;
 	return type;
 }
@@ -42,15 +42,15 @@ void VM::decode()
 {
 	// read the instruction at memory[PC] and then splits typ into the first 2 bits
 	// and data into the next 30 bits
-	this->typ = getTyp(memory[PC]);
-	this->data = getData(memory[PC]);
+	typ = getTyp(memory[PC]);
+	data = getData(memory[PC]);
 
 }
 void VM::execute()
 {
 	
 	if(typ == 0 || typ == 2){
-		this->SP+=1;
+		SP+=1;
 		memory[SP] = data; // literally push data on top of the stack, no calcualtion yet
 	}else{
 		doPrimitive();
@@ -58,7 +58,7 @@ void VM::execute()
 }
 void VM::doPrimitive()
 {
-	switch(this->data){
+	switch(data){
 	
 		case 0: // STOP
 			cout << "Stop"  << endl;
@@ -70,15 +70,28 @@ void VM::doPrimitive()
 			SP-=1;	
 	       	       break;
 		case 2: // SUB
-			cout << "sub" << memory[SP -1] << " " << memory[SP] << endl;
+			cout << "sub " << memory[SP -1] << " " << memory[SP] << endl;
 			memory[SP-1] =  memory[SP-1] - memory[SP];
-			break;	
+			SP--;
+			break;
+		case 3: // MUL
+	      		cout << "mul " << memory[SP -1] << " " << memory[SP] << endl;
+			memory[SP-1] =  memory[SP-1] * memory[SP];
+			SP--;
+			
+			break;
+		case 4: // DIV
+			cout << "div " << memory[SP -1] << " " << memory[SP] << endl;
+			memory[SP-1] =  memory[SP-1] /  memory[SP];
+			SP--;
+			break;
+
 	}
 }
 void VM::run()
 {
 	PC -= 1;// to counteract the fetch method
-	while(running == 1){
+	while(running == 1){// running = 0 when the STOP instruction is called
 		fetch();
 		decode();
 		execute();

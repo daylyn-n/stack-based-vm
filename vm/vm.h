@@ -3,9 +3,10 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdint>
 using namespace std;
 // type definitions
-typedef int32_t i_32;
+using i_32  = int32_t;
 
 class VM {
 	i_32 PC = 100; // program counter
