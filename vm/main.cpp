@@ -1,15 +1,26 @@
+#include <iostream>
 #include "vm.h"
+#include <fstream>
+
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
-	const uint32_t ADD = 0x40000001;
-	const uint32_t SUB = 0x40000002;
-	const uint32_t MUL = 0x40000003;
-	const uint32_t DIV = 0x40000004;
-	const uint32_t STOP = 0x40000000;
+	if(argc < 2)
+	{
+		cout << "Usage: " << argv[0] << " <filename>" << endl;
+		return 0;
+	}
+
+	ifstream r(argv[1], ios::binary);
+	i_32 i;
+	vector<i_32> prog;
+	while(r.read((char*)&i, sizeof(i)))
+	{
+		prog.push_back(i);
+	}
+	
 	VM vm;
-	vector<i_32> prog{3, 4, ADD, 5, SUB, 3, MUL, STOP};
 	vm.loadProgram(prog);
 	vm.run();
 	return 0;

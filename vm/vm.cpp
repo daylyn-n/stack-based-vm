@@ -16,7 +16,7 @@ using namespace std;
 // functions
 VM::VM()
 {
-	memory.reserve(1*10^6); // word size
+	memory.reserve(1000000); // word size
 	
 }
 i_32 VM::getTyp(i_32 instruction)
@@ -102,7 +102,7 @@ void VM::run()
 // loading program into out memory in the stack for run() to read the instructions and exectute
 void VM::loadProgram(vector<i_32> prog)
 {
-	for(i_32 i ; i < prog.size(); i++){
+	for(i_32 i = 0 ; i < prog.size(); i++){
 		memory[PC + i] = prog[i];
 	}
 }

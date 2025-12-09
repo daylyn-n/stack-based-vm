@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdint>
 
 using u8 = uint8_t;
 using string_ = std::vector<std::string>;

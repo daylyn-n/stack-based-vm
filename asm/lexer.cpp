@@ -6,7 +6,7 @@ string_ Lexer::lex(std::string s)
 	char lexeme[256]; // buffer;
 	int i = 0;
 	int j = 0;
-	State state = START;
+	State state = State::START;
 	int done = 0;
 	int len = s.length();
 	int balance = 0;
@@ -14,8 +14,8 @@ string_ Lexer::lex(std::string s)
 	{
 		switch(state)
 		{
-			case START:
-				if(myIsSpace_(s[i]) state = SKIP;
+			case State::START:
+				if(myIsSpace_(s[i])) state =State::SKIP;
 				else if(isGroup_(s[i]))
 				{
 					if(s[i] == '"')
@@ -24,17 +24,17 @@ string_ Lexer::lex(std::string s)
 						i++;
 						j++;
 					}
-					state = READBLOCK;
+					state =State::READBLOCK;
 				}
 				else if(s[i] == '/' && s[i+ 1] == '/')
 			       	{
 					i+=2;
-					state = COMMENT;
+					state =State::COMMENT;
 				}
-				else state = READCHAR;
+				else state =State::READCHAR;
 				break;
-			case READCHAR:
-				if(myIsSpace_(s[i]))state = DUMP;
+			case State::READCHAR:
+				if(myIsSpace_(s[i]))state = State::DUMP;
 				else if(s[i] == '\\')
 				{
 					i+=2;
@@ -48,7 +48,7 @@ string_ Lexer::lex(std::string s)
 						j++;
 						i++;
 					}
-					state = READBLOCK;
+					state = State::READBLOCK;
 				}
 				else if(isSpecial_(s[i]))
 				{
@@ -58,12 +58,12 @@ string_ Lexer::lex(std::string s)
 						j++;
 						i++;
 					}
-					state = DUMP;
+					state = State::DUMP;
 				}
 				else if(s[i] == '/' && s[i + 1] == '/')
 				{
 					i+=2;
-					state = COMMENT;
+					state = State::COMMENT;
 				}
 				else
 				{
@@ -72,7 +72,7 @@ string_ Lexer::lex(std::string s)
 					i++;
 				}
 				break;
-			case READBLOCK:
+			case State::READBLOCK:
 				if(s[i] == begChar_ && s[i] != '"')
 				{
 					balance++;
@@ -86,9 +86,9 @@ string_ Lexer::lex(std::string s)
 					lexeme[j] == s[i];
 					j++;
 					i++;
-					if(balance <= 0) state = DUMP;
+					if(balance <= 0) state = State::DUMP;
 				}
-				else if(endChar__ == '"' && s[i] == '\\')
+				else if(endChar_ == '"' && s[i] == '\\')
 				{
 					i+=2;
 					// TODO: Fix this to actualy record chars
@@ -97,27 +97,27 @@ string_ Lexer::lex(std::string s)
 				{
 					lexeme[j] = s[i];
 					j++;
-					i++:
+					i++;
 				}
 				break;
-			case SKIP:
+			case State::SKIP:
 				if(myIsSpace_(s[i])) i++;
-				else state = READCHAR;
+				else state = State::READCHAR;
 				break;
-			case DUMP:
-				if(j < 0)
+			case State::DUMP:
+				if(j > 0)
 				{
 					lexeme[j] = 0;
 					strlst.push_back(lexeme);
 					j = 0;
 				}
-				state = START;
+				state = State::START;
 				break;
-			case COMMENT:
+			case State::COMMENT:
 				if(s[i] != '\n')i++;
-				else state = READCHAR;
+				else state = State::READCHAR;
 				break;
-			case END:
+			case State::END:
 				i = len;
 				break;
 		}
@@ -129,3 +129,53 @@ string_ Lexer::lex(std::string s)
 	}
 	return strlst;
 }
+
+// create the private bool functions
+// define the white space function
+bool Lexer::myIsSpace_(char c)
+{
+	switch(c)
+	{
+		case '\n':
+		case '\r':
+		case '\t':
+		case '\v':
+		case '\f':
+		case ' ':
+			return true;
+		default:
+			return false;
+	}
+}
+			
+bool Lexer::isSpecial_(char c)
+{
+	begChar_ = c;
+	switch(c)
+	{
+		case '"':
+			endChar_ = '"';
+			return true;
+		case '(':
+			endChar_ = '(';
+			return true;
+		case ')':
+			endChar_ = ')';
+			return true;
+		default:
+			return false;
+	}
+}	
+
+bool Lexer::isGroup_(char c)
+{
+	switch(c)
+	{
+		case '[':
+		case ']':
+			return true;
+		default:
+			return false;
+	}
+}
+
